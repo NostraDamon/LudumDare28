@@ -1,0 +1,41 @@
+# Unity3D .gitignore file.
+#	 Store this file at the root of your local repository.
+.DS_Store
+Library
+Temp
+*.pidb
+*.cs~
+Builds
+*.apk
+
+
+#scopely ignore
+obj/
+*.sublime-workspace
+Android/app/assets/bin/Data
+Assets/StreamingAssets/
+Assets/StreamingAssets
+asset_build/Bin/
+asset_build/Bin
+libmono.so
+libunity.so
+Assembly-CSharp.csproj
+.DS_Store
+Temp/
+Library/
+*.sln
+*.csproj
+*.pidb
+*.userprefs
+.mayaSwatches/
+*.swatch
+iOSBuild/
+GDK.txt
+GDK.txt.meta
+*.unityproj
+
+#UnityVS ignore
+Assets/UnityVS.meta
+Assets/UnityVS/
+UnityVS.Earth-Is-Doomed-Unity.sln.DotSettings
+UnityVS.Earth-Is-Doomed-Unity.suo
