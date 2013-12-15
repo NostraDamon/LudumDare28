@@ -71,11 +71,18 @@ public class BuilderController : MonoBehaviour
                 // Click button
                 if (Input.GetMouseButtonDown(0))
                 {
-                    // OK
+					switch (hit.collider.name) {
 
+	                    // OK
+						case "BtnFight" :
+							print ("Begin combat");
+						break;
 
-                    // BACK
-
+	                    // BACK
+						case "BtnBack" :
+							print ("Boss selection");
+						break;
+					}
                 }
             }
         }
