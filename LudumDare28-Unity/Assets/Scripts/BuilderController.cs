@@ -8,11 +8,7 @@ public class BuilderController : MonoBehaviour
     private GameObject partContainers;
 
     public GUIText textPart;
-    private GameObject tab1;
-    private GameObject tab2;
-    private GameObject tab3;
-    private GameObject tab4;
-    private GameObject tab5;
+    private GameObject[] tabs = new GameObject[5];
 
     private GameObject buttonOK;
     private GameObject buttonBack;
@@ -23,11 +19,13 @@ public class BuilderController : MonoBehaviour
         screenPos = Vector3.zero;
         textPart = GameObject.Find("TextPart").guiText;
         partContainers = GameObject.Find("PartContainers");
-        tab1 = GameObject.Find("Icon_Tab1");
-        tab2 = GameObject.Find("Icon_Tab2");
-        tab3 = GameObject.Find("Icon_Tab3");
-        tab4 = GameObject.Find("Icon_Tab4");
-        tab5 = GameObject.Find("Icon_Tab5");
+
+        for (int i = 0; i < tabs.Length; i++)
+        {
+            tabs[i] = GameObject.Find("Icon_Tab" + (i + 1).ToString());
+        }
+
+        UnselectTabs(0);
 	}
 
     // Update is called once per frame
@@ -55,16 +53,14 @@ public class BuilderController : MonoBehaviour
                 // Click tab
                 if (Input.GetMouseButtonDown(0))
                 {
-                    // Unselect everything
-                    Color tempColor = new Color(0.25f, 0.25f, 0.25f, 0.25f);
-                    tab1.guiTexture.color = tempColor;
-                    tab2.guiTexture.color = tempColor;
-                    tab3.guiTexture.color = tempColor;
-                    tab4.guiTexture.color = tempColor;
-                    tab5.guiTexture.color = tempColor;
+                    // Unselect everything except current
+                    int temp;
+                    if (int.TryParse(hit.collider.name.Substring(0, 1), out temp))
+                    {
+                        UnselectTabs(temp - 1);
+                    }
 
-                    // Select clicked tab, Update text
-                    GameObject.Find("Icon_Tab" + hit.collider.name.Substring(0, 1)).guiTexture.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+                    // Update part text
                     textPart.guiText.text = hit.collider.name;
                 }
             }
@@ -93,6 +89,36 @@ public class BuilderController : MonoBehaviour
                     partContainers.transform.GetChild(i).transform.GetChild(0).GetComponent<Rotation>().isRotating = false;
                     partContainers.transform.GetChild(i).transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = partContainers.transform.GetChild(i).transform.GetChild(0).GetComponent<BuilderPartBehavior>().matBasic;
                 }
+            }
+        }
+    }
+
+    // Unselect every tabs
+    private void UnselectTabs()
+    {
+        Color tempColor = new Color(0.25f, 0.25f, 0.25f, 0.25f);
+
+        for (int i = 0; i < tabs.Length; i++)
+        {
+            tabs[i].guiTexture.color = tempColor;
+        }
+    }
+
+    // Unselect tabs except choosen one
+    private void UnselectTabs(int tab)
+    {
+        Color tempColorOff = new Color(0.25f, 0.25f, 0.25f, 0.25f);
+        Color tempColorOn = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+
+        for (int i = 0; i < tabs.Length; i++)
+        {
+            if (tab == i)
+            {
+                tabs[i].guiTexture.color = tempColorOn;
+            }
+            else
+            {
+                tabs[i].guiTexture.color = tempColorOff;
             }
         }
     }
