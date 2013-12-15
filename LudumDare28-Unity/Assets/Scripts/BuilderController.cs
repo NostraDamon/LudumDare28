@@ -5,10 +5,11 @@ public class BuilderController : MonoBehaviour
 {
     private Vector3 screenPos;
     private RaycastHit hit;
-    private GameObject partContainers;
+    private _PartManager PartManager;
 
     public GUIText textPart;
     private GameObject[] tabs = new GameObject[5];
+    private GameObject[] partContainers = new GameObject[12];
 
     private GameObject buttonOK;
     private GameObject buttonBack;
@@ -16,13 +17,21 @@ public class BuilderController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
+        PartManager = GameObject.Find("_PartManager").GetComponent<_PartManager>();
+
         screenPos = Vector3.zero;
         textPart = GameObject.Find("TextPart").guiText;
-        partContainers = GameObject.Find("PartContainers");
 
+        // Get tabs
         for (int i = 0; i < tabs.Length; i++)
         {
             tabs[i] = GameObject.Find("Icon_Tab" + (i + 1).ToString());
+        }
+
+        // Get containers
+        for (int j = 0; j < partContainers.Length; j++)
+        {
+            partContainers[j] = GameObject.Find("PartContainer_" + (j + 1).ToString());
         }
 
         UnselectTabs(0);
@@ -46,6 +55,18 @@ public class BuilderController : MonoBehaviour
                     hit.collider.transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = hit.collider.transform.GetChild(0).GetComponent<BuilderPartBehavior>().matLight;
                 }
             }
+            else
+            {
+                for (int i = 0; i < partContainers.Length; i++)
+                {
+                    // Stop rotating and switch light off
+                    if (partContainers[i].transform.childCount > 0)
+                    {
+                        partContainers[i].transform.GetChild(0).GetComponent<Rotation>().isRotating = false;
+                        partContainers[i].transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = partContainers[i].transform.GetChild(0).GetComponent<BuilderPartBehavior>().matBasic;
+                    }
+                }
+            }
 
             // Mouse over Tab
             if (hit.collider.tag == "BuilderTab")
@@ -62,6 +83,26 @@ public class BuilderController : MonoBehaviour
 
                     // Update part text
                     textPart.guiText.text = hit.collider.name;
+
+                    // Destroy current parts
+                    for (int i = 0; i < partContainers.Length; i++)
+                    {
+                        if (partContainers[i].transform.childCount > 0)
+                        {
+                            Destroy(partContainers[i].transform.GetChild(0).gameObject);
+                        }
+                    }
+
+                    // Show new parts
+                    GameObject part;
+                    for (int j = 0; j < PartManager.listParts[temp - 1].Count; j++)
+                    {
+                        // Spawn part
+                        part = Instantiate(PartManager.listParts[temp - 1][j], partContainers[j].transform.position, Quaternion.Euler(new Vector3(0, 0, 25))) as GameObject;
+
+                        // Parent part to container
+                        part.transform.parent = partContainers[j].transform;
+                    }
                 }
             }
 
@@ -88,13 +129,13 @@ public class BuilderController : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < partContainers.transform.childCount; i++)
+            for (int i = 0; i < partContainers.Length; i++)
             {
                 // Stop rotating and switch light off
-                if (partContainers.transform.GetChild(i).childCount > 0)
+                if (partContainers[i].transform.childCount > 0)
                 {
-                    partContainers.transform.GetChild(i).transform.GetChild(0).GetComponent<Rotation>().isRotating = false;
-                    partContainers.transform.GetChild(i).transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = partContainers.transform.GetChild(i).transform.GetChild(0).GetComponent<BuilderPartBehavior>().matBasic;
+                    partContainers[i].transform.GetChild(0).GetComponent<Rotation>().isRotating = false;
+                    partContainers[i].transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = partContainers[i].transform.GetChild(0).GetComponent<BuilderPartBehavior>().matBasic;
                 }
             }
         }
