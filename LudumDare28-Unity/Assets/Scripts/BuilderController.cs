@@ -53,6 +53,11 @@ public class BuilderController : MonoBehaviour
                     // Start rotating and enlighten
                     hit.collider.transform.GetChild(0).GetComponent<Rotation>().isRotating = true;
                     hit.collider.transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = hit.collider.transform.GetChild(0).GetComponent<BuilderPartBehavior>().matLight;
+
+					// get clic on part
+					if (Input.GetMouseButtonDown(0)) {
+						print (hit.collider.transform.GetChild(0).name);
+					}
                 }
             }
             else
