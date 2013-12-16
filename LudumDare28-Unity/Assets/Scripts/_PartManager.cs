@@ -27,11 +27,31 @@ public class _PartManager : MonoBehaviour
         Invoke("GoToMain", 1.0f);
     }
 
-    //// Update is called once per frame
-    //void Update ()
-    //{
+    // Update is called once per frame
+    void Update()
+    {
+        // Start game
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            Instantiate(Resources.Load("Prefabs/Player"), new Vector3(0, 1, 0), Quaternion.identity);
+            Destroy(GameObject.Find("Builder"));
 
-    //}
+            Screen.lockCursor = true;
+            Screen.showCursor = false;
+        }
+
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    Screen.lockCursor = true;
+        //    Screen.showCursor = false;
+        //}
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Screen.showCursor = true;
+            Screen.lockCursor = false;
+        }
+    }
 
     private void GoToMain()
     {
