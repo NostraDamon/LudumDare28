@@ -173,8 +173,8 @@ public class BuilderController : MonoBehaviour
                             builderPreview.GetComponent<BoxCollider>().enabled = false;
                             builderPreview.transform.localScale /= 2.5f;
                             builderPreview.transform.parent = player.transform.FindChild("FPSCamera").FindChild("WeaponCamera");
-                            builderPreview.transform.position = new Vector3(0.8f, 1, 1.8f);
-                            builderPreview.transform.rotation = Quaternion.Euler(new Vector3(10, -110, 0));
+                            builderPreview.transform.position = new Vector3(0.5f, 1, 1.8f);
+                            builderPreview.transform.rotation = Quaternion.Euler(new Vector3(10, -100, 0));
 
                             
 

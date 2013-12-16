@@ -39,17 +39,58 @@ public class WeaponBehavior : MonoBehaviour
 
     public string description;
 
+    private _PartManager PartManager;
+    private float fireTimer;
+    private float fireTimerSecondary;
+
 	// Use this for initialization
 	void Start ()
     {
+        PartManager = GameObject.Find("_PartManager").GetComponent<_PartManager>();
+
         description = string.Empty;
+        fireTimer = 1;
+        fireTimerSecondary = 1;
 	}
 
-    //// Update is called once per frame
-    //void Update()
-    //{
+    // Update is called once per frame
+    void Update()
+    {
+        if (PartManager.inGame)
+        {
+            fireTimer -= Time.deltaTime;
+            fireTimerSecondary -= Time.deltaTime;
 
-    //}
+            // Left CLick
+            if (Input.GetMouseButton(0))
+            {
+                if (fireTimer <= 0)
+                {
+                    if (rocketLauncher)
+                    {
+                        GameObject rocket = Instantiate(Resources.Load("Prefabs/Bullet_Rocket"),
+                                                        transform.position + transform.right*1,
+                                                        Quaternion.Euler(transform.parent.transform.rotation.eulerAngles.x, transform.parent.transform.rotation.eulerAngles.y, transform.parent.transform.rotation.eulerAngles.z)) as GameObject;
+                    }
+
+                    fireTimer = 2 * (1 - fireRatePlus / 100);
+                }
+            }
+            // Right Click
+            else if (Input.GetMouseButtonDown(1))
+            {
+                if (fireTimerSecondary <= 0)
+                {
+                    if (grenade)
+                    {
+                        
+                    }
+                }
+
+                fireTimerSecondary = 2;
+            }
+        }
+    }
 
     public void UpdateProperties()
     {
