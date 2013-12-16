@@ -75,17 +75,18 @@ public class BuilderController : MonoBehaviour
 						float x = 0;
 						float y = 0;
 						switch(partType) {
-							case 0:	x = -1;	y = 0;	break; // 1 - Core Part
-							case 1:	x = 0;	y = 0;	break; // 2 - Main Canon
-							case 2:	x = 1;	y = -.75f;	break; // 3 - Secondary Power
-							case 3:	x = 0;	y = .75f;	break; // 4 - Ammunition Type
-							case 4:	x = 1;	y = .75f;	break; // 5 - Accessory
+							case 0:	x = -1;	y = 0.3f;	break; // 1 - Core Part
+							case 1:	x = 1;	y = 0.3f;	break; // 2 - Main Canon
+							case 2:	x = 0.5f;	y = -0.3f;	break; // 3 - Secondary Power
+							case 3:	x = -0.5f;	y = -0.6f;	break; // 4 - Ammunition Type
+							case 4:	x = 1;	y = 0.9f;	break; // 5 - Accessory
 						}
 
-						// set part into preview
+						// Set part into preview and scale
 						GameObject part = Instantiate(Resources.Load ("Prefabs/Parts/" + hit.collider.transform.GetChild(0).name.Replace("(Clone)","") + "_preview"), new Vector3(builderPreview.transform.position.x + x, builderPreview.transform.position.y + y, 0), Quaternion.identity) as GameObject;
+                        part.transform.localScale *= 2;
 
-						// set instantiation into prefab
+						// Set instantiation into prefab
 						part.transform.parent = builderPreview.transform;
 					}
                 }
