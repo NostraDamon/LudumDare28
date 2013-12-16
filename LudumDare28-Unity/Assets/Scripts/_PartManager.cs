@@ -11,10 +11,14 @@ public class _PartManager : MonoBehaviour
     public List<GameObject> listPartsAmmo;
     public List<GameObject> listPartsAccessory;
 
+    public bool inGame;
+
     // Use this for initialization
     void Start()
     {
         DontDestroyOnLoad(this);
+
+        inGame = false;
 
         // Load parts in array
         listParts[0] = listPartsCore;
@@ -30,26 +34,19 @@ public class _PartManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Start game
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (inGame)
         {
-            Instantiate(Resources.Load("Prefabs/Player"), new Vector3(0, 1, 0), Quaternion.identity);
-            Destroy(GameObject.Find("Builder"));
+            if (Input.GetMouseButtonDown(0))
+            {
+                Screen.lockCursor = true;
+                Screen.showCursor = false;
+            }
 
-            Screen.lockCursor = true;
-            Screen.showCursor = false;
-        }
-
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    Screen.lockCursor = true;
-        //    Screen.showCursor = false;
-        //}
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Screen.showCursor = true;
-            Screen.lockCursor = false;
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Return))
+            {
+                Screen.showCursor = true;
+                Screen.lockCursor = false;
+            }
         }
     }
 

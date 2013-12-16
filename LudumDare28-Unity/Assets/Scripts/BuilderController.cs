@@ -8,6 +8,7 @@ public class BuilderController : MonoBehaviour
     private _PartManager PartManager;
 
     public GUIText textPart;
+    public GUIText textDescr;
     private GameObject[] tabs = new GameObject[5];
     private GameObject[] partContainers = new GameObject[12];
 
@@ -26,6 +27,7 @@ public class BuilderController : MonoBehaviour
 
         screenPos = Vector3.zero;
         textPart = GameObject.Find("TextPart").guiText;
+        textDescr = GameObject.Find("TextPartDescr").guiText;
 
         // Get tabs
         for (int i = 0; i < tabs.Length; i++)
@@ -40,6 +42,17 @@ public class BuilderController : MonoBehaviour
         }
 
         UnselectTabs(0);
+
+        // Show first tab parts
+        GameObject part;
+        for (int k = 0; k < PartManager.listParts[0].Count; k++)
+        {
+            // Spawn part
+            part = Instantiate(PartManager.listParts[0][k], partContainers[k].transform.position, Quaternion.Euler(new Vector3(0, 0, 25))) as GameObject;
+
+            // Parent part to container
+            part.transform.parent = partContainers[k].transform;
+        }
 	}
 
     // Update is called once per frame
@@ -59,6 +72,9 @@ public class BuilderController : MonoBehaviour
                     hit.collider.transform.GetChild(0).GetComponent<Rotation>().isRotating = true;
                     hit.collider.transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = hit.collider.transform.GetChild(0).GetComponent<BuilderPartBehavior>().matLight;
 
+                    // Display description
+                    textDescr.text = hit.collider.transform.GetChild(0).GetComponent<BuilderPartBehavior>().description;
+
 					// get clic on part
 					if (Input.GetMouseButtonDown(0)) {
 
@@ -66,7 +82,7 @@ public class BuilderController : MonoBehaviour
 						for (int i = 0; i < builderPreview.transform.childCount; i++) {
 
 							// delete currenty set clicked part if found
-							if (builderPreview.transform.GetChild(i).name.Split('_')[2] == (partType + 1).ToString()) {
+							if (builderPreview.transform.GetChild(i).name.Split('_')[2].Substring(0, 1) == (partType + 1).ToString()) {
 								Destroy(builderPreview.transform.GetChild(i).gameObject);
 							}
 						}
@@ -83,25 +99,23 @@ public class BuilderController : MonoBehaviour
 						}
 
 						// Set part into preview and scale
-						GameObject part = Instantiate(Resources.Load ("Prefabs/Parts/" + hit.collider.transform.GetChild(0).name.Replace("(Clone)","") + "_preview"), new Vector3(builderPreview.transform.position.x + x, builderPreview.transform.position.y + y, 0), Quaternion.identity) as GameObject;
+						GameObject part = Instantiate(Resources.Load ("Prefabs/Parts/" + hit.collider.transform.GetChild(0).name.Replace("(Clone)","")), new Vector3(builderPreview.transform.position.x + x, builderPreview.transform.position.y + y, 0), Quaternion.identity) as GameObject;
                         part.transform.localScale *= 2;
 
 						// Set instantiation into prefab
 						part.transform.parent = builderPreview.transform;
+                        part.GetComponent<Rotation>().enabled = false;
+
+                        // Update weapon description
+                        Invoke("WaitToUpdate", 0.1f);
 					}
                 }
             }
-            else
+
+            // Mouse over Preview
+            if (hit.collider.tag == "BuilderPreview")
             {
-                for (int i = 0; i < partContainers.Length; i++)
-                {
-                    // Stop rotating and switch light off
-                    if (partContainers[i].transform.childCount > 0)
-                    {
-                        partContainers[i].transform.GetChild(0).GetComponent<Rotation>().isRotating = false;
-                        partContainers[i].transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = partContainers[i].transform.GetChild(0).GetComponent<BuilderPartBehavior>().matBasic;
-                    }
-                }
+                textDescr.text = hit.collider.GetComponent<WeaponBehavior>().description;
             }
 
             // Mouse over Tab
@@ -152,12 +166,33 @@ public class BuilderController : MonoBehaviour
 
 	                    // OK
 						case "BtnFight" :
-							print ("Begin combat");
+
+                            // Set player and give weapon
+                            GameObject player;
+							player = Instantiate(Resources.Load("Prefabs/Player"), new Vector3(0, 1, 0), Quaternion.identity)as GameObject;
+                            builderPreview.GetComponent<BoxCollider>().enabled = false;
+                            builderPreview.transform.localScale /= 2.5f;
+                            builderPreview.transform.parent = player.transform.FindChild("FPSCamera").FindChild("WeaponCamera");
+                            builderPreview.transform.position = new Vector3(0.8f, 1, 1.8f);
+                            builderPreview.transform.rotation = Quaternion.Euler(new Vector3(10, -110, 0));
+
+                            
+
+                            // Get rid of Builder
+                            Destroy(GameObject.Find("Builder"));
+
+                            Screen.lockCursor = true;
+                            Screen.showCursor = false;
+
+                            PartManager.inGame = true;
+
 						break;
 
 	                    // BACK
 						case "BtnBack" :
-							print ("Boss selection");
+
+                            Application.LoadLevel("Menu");
+
 						break;
 					}
                 }
@@ -172,6 +207,7 @@ public class BuilderController : MonoBehaviour
                 {
                     partContainers[i].transform.GetChild(0).GetComponent<Rotation>().isRotating = false;
                     partContainers[i].transform.GetChild(0).GetComponent<BuilderPartBehavior>().renderer.material = partContainers[i].transform.GetChild(0).GetComponent<BuilderPartBehavior>().matBasic;
+                    textDescr.text = string.Empty;
                 }
             }
         }
@@ -205,5 +241,10 @@ public class BuilderController : MonoBehaviour
                 tabs[i].guiTexture.color = tempColorOff;
             }
         }
+    }
+
+    private void WaitToUpdate()
+    {
+        builderPreview.GetComponent<WeaponBehavior>().UpdateProperties();
     }
 }
