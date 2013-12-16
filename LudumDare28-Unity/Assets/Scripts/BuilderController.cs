@@ -11,13 +11,18 @@ public class BuilderController : MonoBehaviour
     private GameObject[] tabs = new GameObject[5];
     private GameObject[] partContainers = new GameObject[12];
 
+	private GameObject builderPreview;
     private GameObject buttonOK;
     private GameObject buttonBack;
+
+	private int partType;
 
 	// Use this for initialization
 	void Start ()
     {
         PartManager = GameObject.Find("_PartManager").GetComponent<_PartManager>();
+
+		builderPreview = GameObject.Find("BuilderPreview");
 
         screenPos = Vector3.zero;
         textPart = GameObject.Find("TextPart").guiText;
@@ -56,7 +61,32 @@ public class BuilderController : MonoBehaviour
 
 					// get clic on part
 					if (Input.GetMouseButtonDown(0)) {
-						print (hit.collider.transform.GetChild(0).name);
+
+						// list parts currently set to weapon
+						for (int i = 0; i < builderPreview.transform.childCount; i++) {
+
+							// delete currenty set clicked part if found
+							if (builderPreview.transform.GetChild(i).name.Split('_')[2] == (partType + 1).ToString()) {
+								Destroy(builderPreview.transform.GetChild(i).gameObject);
+							}
+						}
+
+						// Calculate new part's coordinates
+						float x = 0;
+						float y = 0;
+						switch(partType) {
+							case 0:	x = -1;	y = 0;	break; // 1 - Core Part
+							case 1:	x = 0;	y = 0;	break; // 2 - Main Canon
+							case 2:	x = 1;	y = -.75f;	break; // 3 - Secondary Power
+							case 3:	x = 0;	y = .75f;	break; // 4 - Ammunition Type
+							case 4:	x = 1;	y = .75f;	break; // 5 - Accessory
+						}
+
+						// set part into preview
+						GameObject part = Instantiate(Resources.Load ("Prefabs/Parts/" + hit.collider.transform.GetChild(0).name.Replace("(Clone)","") + "_preview"), new Vector3(builderPreview.transform.position.x + x, builderPreview.transform.position.y + y, 0), Quaternion.identity) as GameObject;
+
+						// set instantiation into prefab
+						part.transform.parent = builderPreview.transform;
 					}
                 }
             }
@@ -80,10 +110,10 @@ public class BuilderController : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
                     // Unselect everything except current
-                    int temp;
-                    if (int.TryParse(hit.collider.name.Substring(0, 1), out temp))
+					if (int.TryParse(hit.collider.name.Substring(0, 1), out partType))
                     {
-                        UnselectTabs(temp - 1);
+						partType--;
+						UnselectTabs(partType);
                     }
 
                     // Update part text
@@ -100,10 +130,10 @@ public class BuilderController : MonoBehaviour
 
                     // Show new parts
                     GameObject part;
-                    for (int j = 0; j < PartManager.listParts[temp - 1].Count; j++)
+					for (int j = 0; j < PartManager.listParts[partType].Count; j++)
                     {
                         // Spawn part
-                        part = Instantiate(PartManager.listParts[temp - 1][j], partContainers[j].transform.position, Quaternion.Euler(new Vector3(0, 0, 25))) as GameObject;
+						part = Instantiate(PartManager.listParts[partType][j], partContainers[j].transform.position, Quaternion.Euler(new Vector3(0, 0, 25))) as GameObject;
 
                         // Parent part to container
                         part.transform.parent = partContainers[j].transform;
